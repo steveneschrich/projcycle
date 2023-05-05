@@ -1,0 +1,8 @@
+---
+title: {{PI}}/{{Project}} 
+format: html
+---
+
+This project was initiated by {{PI}}. Describe the project overview here.
+
+High-level overview of the project (like the README).

@@ -1,0 +1,29 @@
+project:
+  type: website
+  output-dir: public
+
+execute:
+  freeze: auto
+
+website:
+  title: {{package}}
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+  sidebar:
+    style: "docked"
+    contents: auto
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: true
+    fig-width: 7
+    fig-height: 7
+
+
+
