@@ -86,13 +86,14 @@ export_tbl_as_word <- function(x, file) {
 #' @export
 #'
 #' @examples
-fig_maker <- function(x, label = "@fig-fig1", filename = knitr::current_input(), output=c("png","pdf")) {
+fig_maker <- function(x, label = "@fig-fig1", filename = knitr::current_input(), output=c("png","pdf"),
+                      width=NA, height=NA) {
 
-  refs <- purrr::map_chr(output, \(.f) {fig_maker_(x, label = label, filename=filename, output=.f)})
+  refs <- purrr::map_chr(output, \(.f) {fig_maker_(x, label = label, filename=filename, output=.f, width=width, height=height)})
   cat("<b>",label,"</b>:", stringr::str_flatten(refs, collapse = " | "))
 }
 
-fig_maker_ <- function(x, label = "@fig-fig1", filename = knitr::current_input(), output = "word") {
+fig_maker_ <- function(x, label = "@fig-fig1", filename = knitr::current_input(), output = "word", width=NA, height=NA) {
 
   filename <- stringr::str_remove(filename, ".markdown$")
   output_filename <- paste0(
@@ -105,13 +106,13 @@ fig_maker_ <- function(x, label = "@fig-fig1", filename = knitr::current_input()
     if ( ! endsWith(output_filename, ".png") )
       output_filename <- paste0(output_filename, ".png")
     md_output <- glue::glue("[{{{{< fa file-image >}}}}]({output_filename})")
-    export_fig_as_png(x, output_filename)
+    export_fig_as_png(x, output_filename, width = width, height = height)
   } else if ( output == "pdf") {
     if ( ! endsWith(output_filename, ".pdf") )
       output_filename <- paste0(output_filename, ".pdf")
 
     md_output <- glue::glue("[{{{{< fa file-pdf >}}}}]({output_filename})")
-    export_fig_as_pdf(x, output_filename)
+    export_fig_as_pdf(x, output_filename, width=width, height=height)
   }
 
   md_output
@@ -119,12 +120,19 @@ fig_maker_ <- function(x, label = "@fig-fig1", filename = knitr::current_input()
 
 
 
-export_fig_as_png <- function(x, file) {
+export_fig_as_png <- function(x, file, width= NA, height=NA,dpi=1200) {
   if ( !endsWith(file, ".png"))
     file <- paste0(file, ".png")
 
+  opts <- list(width = width, height= height, dpi = dpi) |>
+    purrr::discard(is.na)
+
   if (methods::is(x, "ggplot") ) {
-    suppressMessages(ggplot2::ggsave(plot = x, filename = file, dpi = 1200))
+    suppressMessages(ggplot2::ggsave(plot = x, filename = file, !!!opts))
+  } else if ( methods::is(x, "Heatmap")) {
+    png(file = file, !!!opts)
+    ComplexHeatmap::draw(x)
+    dev.off()
   } else if ( methods::is(x, "data.frame") ) {
     openxlsx::write.xlsx(x, file = file)
   } else if (methods::is(x, "flextable") ) {
@@ -136,16 +144,23 @@ export_fig_as_png <- function(x, file) {
 
 }
 
-export_fig_as_pdf <- function(x, file) {
+export_fig_as_pdf <- function(x, file, width=NA, height=NA, dpi=1200) {
   if ( !endsWith(file, ".pdf"))
     file <- paste0(file, ".pdf")
+  opts <- list(width = width, height= height, dpi = dpi) |>
+    purrr::discard(is.na)
 
   if (methods::is(x, "ggplot") ) {
-    suppressMessages(ggplot2::ggsave(plot = x, filename = file, dpi = 1200))
+    suppressMessages(ggplot2::ggsave(plot = x, filename = file, !!!opts))
+  } else if ( methods::is(x, "Heatmap")) {
+    pdf(file = file, !!!(opts[setdiff(names(opts), "dpi")]))
+    ComplexHeatmap::draw(x)
+    dev.off()
   } else if ( methods::is(x, "data.frame") ) {
     openxlsx::write.xlsx(x, file = file)
   } else if (methods::is(x, "flextable") ) {
     openxlsx::write.xlsx(x$body$dataset, file = file)
+
   } else {
     cli::cli_abort("Could not find a handler for type {class(x)} of figure to write to {file}.")
   }
