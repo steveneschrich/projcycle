@@ -17,7 +17,7 @@ create_project <- function(path, rstudio = rstudioapi::isAvailable(),
   usethis::proj_set(path, force = TRUE)
 
   # Create a package first?
-  usethis::create_package/project(...)
+  #usethis::create_package/project(...)
 
   # Create directories in project
   usethis::use_directory("data")
@@ -28,7 +28,7 @@ create_project <- function(path, rstudio = rstudioapi::isAvailable(),
   usethis::use_directory("R")
 
   # Create descripton file
-  usethis::use_description(fields, check_name = FALSE, roxygen = roxygen)
+  #usethis::use_description(fields, check_name = FALSE, roxygen = roxygen)
   usethis::use_namespace(roxygen = roxygen)
   if ( rstudio ) {
     usethis::use_rstudio()

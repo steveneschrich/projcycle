@@ -12,9 +12,17 @@ RoxygenNote: 7.2.3
 Imports: 
     cli,
     desc,
+    DT,
+    flextable,
     fs,
+    ggplot2,
+    glue,
+    gtsummary,
     here,
+    methods,
+    openxlsx,
     purrr,
     stringi,
+    stringr,
     usethis,
     withr
