@@ -24,8 +24,8 @@ datatable <- function(data, ...) {
           targets = "_all",
           render = DT::JS(
             "function(data, type, row, meta) {",
-            "return type === 'display' && data != null && data.length > 6 ?",
-            "'<span title=\"' + data + '\">' + data.substr(0, 6) + '...</span>' : data;",
+            "return type === 'display' && data != null && data.length > 20 ?",
+            "'<span title=\"' + data + '\">' + data.substr(0, 20) + '...</span>' : data;",
             "}")
         ))
     ))
