@@ -106,13 +106,13 @@ fig_maker_ <- function(x, label = "@fig-fig1", filename = knitr::current_input()
     if ( ! endsWith(output_filename, ".png") )
       output_filename <- paste0(output_filename, ".png")
     md_output <- glue::glue("[{{{{< fa file-image >}}}}]({output_filename})")
-    export_fig_as_png(x, output_filename, width = width, height = height)
+    export_fig_as_png(x, file = output_filename, width = width, height = height)
   } else if ( output == "pdf") {
     if ( ! endsWith(output_filename, ".pdf") )
       output_filename <- paste0(output_filename, ".pdf")
 
     md_output <- glue::glue("[{{{{< fa file-pdf >}}}}]({output_filename})")
-    export_fig_as_pdf(x, output_filename, width=width, height=height)
+    export_fig_as_pdf(x, file = output_filename, width=width, height=height)
   }
 
   md_output
@@ -128,9 +128,26 @@ export_fig_as_png <- function(x, file, width= NA, height=NA,dpi=1200) {
     purrr::discard(is.na)
 
   if (methods::is(x, "ggplot") ) {
-    suppressMessages(ggplot2::ggsave(plot = x, filename = file, !!!opts))
+    suppressMessages(
+      do.call(ggplot2::ggsave,
+              list(
+                plot = x,
+                filename = file,
+                width = width,
+                height=height,
+                dpi = dpi
+              ) |> purrr::discard(is.na)
+      )
+    )
   } else if ( methods::is(x, "Heatmap")) {
-    png(file = file, !!!opts)
+    do.call(png,
+            list(
+              file = file,
+              width = width,
+              height = height,
+              dpi = dpi
+            ) |> purrr::discard(is.na)
+    )
     ComplexHeatmap::draw(x)
     dev.off()
   } else if ( methods::is(x, "data.frame") ) {
@@ -151,9 +168,26 @@ export_fig_as_pdf <- function(x, file, width=NA, height=NA, dpi=1200) {
     purrr::discard(is.na)
 
   if (methods::is(x, "ggplot") ) {
-    suppressMessages(ggplot2::ggsave(plot = x, filename = file, !!!opts))
+    suppressMessages(
+      do.call(ggplot2::ggsave,
+              list(
+                plot = x,
+                filename = file,
+                width = width,
+                height=height,
+                dpi = dpi
+              ) |> purrr::discard(is.na)
+      )
+    )
+
   } else if ( methods::is(x, "Heatmap")) {
-    pdf(file = file, !!!(opts[setdiff(names(opts), "dpi")]))
+    do.call(pdf,
+            list(
+              file = file,
+              width = width,
+              height = height,
+            )
+    )
     ComplexHeatmap::draw(x)
     dev.off()
   } else if ( methods::is(x, "data.frame") ) {
