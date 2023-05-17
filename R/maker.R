@@ -145,7 +145,7 @@ export_fig_as_png <- function(x, file, width= NA, height=NA,dpi=1200) {
               file = file,
               width = width,
               height = height,
-              dpi = dpi
+              res = dpi
             ) |> purrr::discard(is.na)
     )
     ComplexHeatmap::draw(x)
@@ -185,7 +185,7 @@ export_fig_as_pdf <- function(x, file, width=NA, height=NA, dpi=1200) {
             list(
               file = file,
               width = width,
-              height = height,
+              height = height
             )
     )
     ComplexHeatmap::draw(x)
